@@ -1,17 +1,17 @@
 import {
-  Injectable,
   BadRequestException,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-
+import { SearchDto } from 'src/shared/dto/search.dto';
+import { Repository, Like } from 'typeorm';
+import { AuthMiddlewareRequest } from '../../shared/dto/auth-middleware.dto';
 import { IdDto } from '../../shared/dto/id.dto';
+import { CreateFollowDto } from './dto/create-follow.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { AuthMiddlewareRequest } from '../../shared/dto/auth-middleware.dto';
-import { CreateFollowDto } from './dto/create-follow.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +20,16 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
+  async findAll(searchDto: SearchDto): Promise<User[]> {
+    const { search } = searchDto;
+
+    if (search && search !== '') {
+      return this.usersRepository.find({
+        order: { created_at: 'DESC' },
+        where: { username: Like(`%${search}%`) },
+      });
+    }
+
     return this.usersRepository.find({
       order: { created_at: 'DESC' },
     });
@@ -135,28 +144,34 @@ export class UsersService {
   async showUserFollows(req: AuthMiddlewareRequest) {
     const { user } = req;
 
-    return this.usersRepository.findOne(user.id, { relations: ['follows'] });
+    return this.usersRepository.findOne(user.id, {
+      relations: ['follows'],
+      select: ['username'],
+    });
   }
 
   async showUserFollowers(req: AuthMiddlewareRequest) {
     const { user } = req;
 
     return this.usersRepository.findOne(user.id, {
+      select: ['username'],
       relations: ['followers'],
     });
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { name, password } = createUserDto;
+    const { name, password, username } = createUserDto;
     const email = createUserDto.email.toLowerCase();
 
-    // check if user exists by the lowercase email
+    // check if user exists by the lowercase email or username
     const userExists = await this.usersRepository.findOne({
-      where: { email },
+      where: [{ email }, { username }],
     });
 
     if (userExists) {
-      throw new BadRequestException(`O email ${email} não está disponível`);
+      throw new BadRequestException(
+        `O email ${email} ou username ${username} não está disponível`,
+      );
     }
 
     // create new user
@@ -164,6 +179,7 @@ export class UsersService {
       email,
       name,
       password,
+      username,
     });
 
     await this.usersRepository.save(user);
