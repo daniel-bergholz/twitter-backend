@@ -42,7 +42,7 @@ export class UsersService {
     const user = await this.usersRepository.findOne(id);
 
     if (!user) {
-      throw new BadRequestException(`Usuário não encontrado`);
+      throw new BadRequestException(`O usuário com ID = ${id} não existe`);
     }
 
     return user;
@@ -70,19 +70,15 @@ export class UsersService {
     const { id } = userFromJwt;
 
     // check if user exists
-    const user = await this.usersRepository.findOne(id);
-
-    if (!user) {
-      throw new BadRequestException(`O usuário com ID = ${id} não existe`);
-    }
+    const user = await this.findOne({ id });
 
     // enable only name or password update
-    const { name, password } = updateUserDto;
+    const { name, password, bio } = updateUserDto;
 
-    // error if new fields are empty
-    if (!name && !password) {
+    // error if all fields are empty
+    if (!name && !password && !bio) {
       throw new BadRequestException(
-        `Os campos: name ou password precisam ser enviados no corpo da requisição`,
+        `Os campos: name, bio ou password precisam ser enviados no corpo da requisição`,
       );
     }
 
@@ -92,6 +88,9 @@ export class UsersService {
     }
     if (password) {
       user.password = password;
+    }
+    if (bio) {
+      user.bio = bio;
     }
 
     await this.usersRepository.save(user);
@@ -181,39 +180,6 @@ export class UsersService {
       password,
       username,
     });
-
-    await this.usersRepository.save(user);
-
-    return this.removeUnwantedFields(user);
-  }
-
-  async update(idDto: IdDto, updateUserDto: UpdateUserDto): Promise<User> {
-    const { id } = idDto;
-
-    // check if user exists
-    const user = await this.usersRepository.findOne(id);
-
-    if (!user) {
-      throw new BadRequestException(`O usuário com ID = ${id} não existe`);
-    }
-
-    // enable only name or password update
-    const { name, password } = updateUserDto;
-
-    // error if new fields are empty
-    if (!name && !password) {
-      throw new BadRequestException(
-        `Os campos: name ou password precisam ser enviados no corpo da requisição`,
-      );
-    }
-
-    // update user
-    if (name) {
-      user.name = name;
-    }
-    if (password) {
-      user.password = password;
-    }
 
     await this.usersRepository.save(user);
 
