@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { randomBytes } from 'crypto';
 
 import { IdDto } from '../../shared/dto/id.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthMiddlewareRequest } from '../../shared/dto/auth-middleware.dto';
+import { CreateFollowDto } from './dto/create-follow.dto';
 
 @Injectable()
 export class UsersService {
@@ -88,6 +88,62 @@ export class UsersService {
     await this.usersRepository.save(user);
 
     return this.removeUnwantedFields(user);
+  }
+
+  async removeFollow(
+    createFollowDto: CreateFollowDto,
+    req: AuthMiddlewareRequest,
+  ) {
+    const { follow_user_id } = createFollowDto;
+    const { user: userFromJwt } = req;
+
+    // check if user that will be followed exists
+    const user = await this.usersRepository.findOne(follow_user_id);
+
+    // check if logged user exists
+    const loggedUser = await this.usersRepository.findOne(userFromJwt.id, {
+      relations: ['follows'],
+    });
+
+    loggedUser.follows = loggedUser.follows.filter(
+      (follow) => follow.id !== user.id,
+    );
+
+    await this.usersRepository.save(loggedUser);
+  }
+
+  async createFollow(
+    createFollowDto: CreateFollowDto,
+    req: AuthMiddlewareRequest,
+  ) {
+    const { follow_user_id } = createFollowDto;
+    const { user: userFromJwt } = req;
+
+    // check if user that will be followed exists
+    const user = await this.usersRepository.findOne(follow_user_id);
+
+    // check if logged user exists
+    const loggedUser = await this.usersRepository.findOne(userFromJwt.id, {
+      relations: ['follows'],
+    });
+
+    loggedUser.follows.push(user);
+
+    await this.usersRepository.save(loggedUser);
+  }
+
+  async showUserFollows(req: AuthMiddlewareRequest) {
+    const { user } = req;
+
+    return this.usersRepository.findOne(user.id, { relations: ['follows'] });
+  }
+
+  async showUserFollowers(req: AuthMiddlewareRequest) {
+    const { user } = req;
+
+    return this.usersRepository.findOne(user.id, {
+      relations: ['followers'],
+    });
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {

@@ -1,13 +1,16 @@
+import * as bcrypt from 'bcrypt';
+// import { Follow } from 'src/modules/follows/entities/follow.entity';
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 @Entity('users')
 export class User {
@@ -28,6 +31,13 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToMany(() => User, (user) => user.followers)
+  follows: User[];
+
+  @ManyToMany(() => User, (user) => user.follows)
+  @JoinTable()
+  followers: User[];
 
   @BeforeUpdate()
   @BeforeInsert()
