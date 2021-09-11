@@ -31,9 +31,20 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Twitter API')
-    .setDescription('Documentação do backend do Twitter')
+    .setDescription(
+      'Documentação do backend do Twitter, utilizado no Formação Frontend Expert',
+    )
     .setVersion('1.0')
     .addBearerAuth()
+    .setContact(
+      'Daniel Berg',
+      'https://maratonas.academy/',
+      'daniel@maratonas.academy',
+    )
+    .setExternalDoc(
+      'GitHub do backend',
+      'https://github.com/daniel-bergholz/twitter-backend',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
