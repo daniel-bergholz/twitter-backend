@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -15,6 +16,7 @@ import { AuthMiddlewareRequest } from '../../shared/dto/auth-middleware.dto';
 import { CreateFollowDto } from './dto/create-follow.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsernameDto } from './dto/username.dto';
 import { UsersService } from './users.service';
 
 @Controller()
@@ -36,6 +38,12 @@ export class UsersController {
   @Get('/profile')
   showProfile(@Request() req: AuthMiddlewareRequest) {
     return this.usersService.showProfile(req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile/:username')
+  showProfileByUsername(@Param() usernameDto: UsernameDto) {
+    return this.usersService.showProfileByUsername(usernameDto);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -11,6 +11,7 @@ import { IdDto } from '../../shared/dto/id.dto';
 import { CreateFollowDto } from './dto/create-follow.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsernameDto } from './dto/username.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -59,6 +60,24 @@ export class UsersService {
 
     if (!user) {
       throw new BadRequestException(`O usuário com ID = ${id} não existe`);
+    }
+
+    return user;
+  }
+
+  async showProfileByUsername(usernameDto: UsernameDto): Promise<User> {
+    const { username } = usernameDto;
+
+    // check if user exists
+    const user = await this.usersRepository.findOne({
+      where: { username },
+      relations: ['tweets'],
+    });
+
+    if (!user) {
+      throw new BadRequestException(
+        `O usuário com username = ${username} não existe`,
+      );
     }
 
     return user;
