@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
   Post,
   Query,
@@ -13,7 +12,6 @@ import {
 import { SearchDto } from 'src/shared/dto/search.dto';
 import { JwtAuthGuard } from '../../modules/auth/guards/jwt-auth.guard';
 import { AuthMiddlewareRequest } from '../../shared/dto/auth-middleware.dto';
-import { IdDto } from '../../shared/dto/id.dto';
 import { CreateFollowDto } from './dto/create-follow.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -35,12 +33,6 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('users/:id')
-  findOne(@Param() idDto: IdDto) {
-    return this.usersService.findOne(idDto);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('/profile')
   showProfile(@Request() req: AuthMiddlewareRequest) {
     return this.usersService.showProfile(req);
@@ -56,21 +48,15 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('users/:id')
-  remove(@Param() idDto: IdDto) {
-    return this.usersService.remove(idDto);
+  @Delete('/profile')
+  remove(@Request() req: AuthMiddlewareRequest) {
+    return this.usersService.remove(req);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('follows')
+  @Get('profile/follows')
   showUserFollows(@Request() req: AuthMiddlewareRequest) {
-    return this.usersService.showUserFollows(req);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('followers')
-  showUserFollowers(@Request() req: AuthMiddlewareRequest) {
-    return this.usersService.showUserFollowers(req);
+    return this.usersService.showUserFollowsAndFollowers(req);
   }
 
   @UseGuards(JwtAuthGuard)

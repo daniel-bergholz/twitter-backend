@@ -53,7 +53,9 @@ export class UsersService {
     const { id } = userFromJwt;
 
     // check if user exists
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['tweets'],
+    });
 
     if (!user) {
       throw new BadRequestException(`O usuário com ID = ${id} não existe`);
@@ -140,21 +142,12 @@ export class UsersService {
     await this.usersRepository.save(loggedUser);
   }
 
-  async showUserFollows(req: AuthMiddlewareRequest) {
+  async showUserFollowsAndFollowers(req: AuthMiddlewareRequest) {
     const { user } = req;
 
     return this.usersRepository.findOne(user.id, {
-      relations: ['follows'],
+      relations: ['follows', 'followers'],
       select: ['username'],
-    });
-  }
-
-  async showUserFollowers(req: AuthMiddlewareRequest) {
-    const { user } = req;
-
-    return this.usersRepository.findOne(user.id, {
-      select: ['username'],
-      relations: ['followers'],
     });
   }
 
@@ -186,17 +179,13 @@ export class UsersService {
     return this.removeUnwantedFields(user);
   }
 
-  async remove(idDto: IdDto): Promise<void> {
-    const { id } = idDto;
+  async remove(req: AuthMiddlewareRequest): Promise<void> {
+    const { user: userFromJwt } = req;
 
     // check if user exists
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.findOne({ id: userFromJwt.id });
 
-    if (!user) {
-      throw new BadRequestException(`O usuário com ID = ${id} não existe`);
-    }
-
-    await this.usersRepository.delete(id);
+    await this.usersRepository.delete(user.id);
   }
 
   // CAUTION: this function returns the user WITH PASSWORD

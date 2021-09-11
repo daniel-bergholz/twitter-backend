@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
-// import { Follow } from 'src/modules/follows/entities/follow.entity';
+import { Tweet } from 'src/modules/tweets/entities/tweet.entity';
 import {
+  AfterLoad,
   BeforeInsert,
   BeforeUpdate,
   Column,
@@ -8,6 +9,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -32,16 +34,19 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  @OneToMany(() => Tweet, (tweet) => tweet.user)
+  tweets: Tweet[];
+
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToMany(() => User, (user) => user.followers)
+  @ManyToMany(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
   follows: User[];
 
-  @ManyToMany(() => User, (user) => user.follows)
+  @ManyToMany(() => User, (user) => user.follows, { onDelete: 'CASCADE' })
   @JoinTable()
   followers: User[];
 
@@ -66,6 +71,15 @@ export class User {
   async hashPassword() {
     if (this?.password) {
       this.password = await bcrypt.hash(this.password, 12);
+    }
+  }
+
+  @AfterLoad()
+  sortItems() {
+    if (this?.tweets?.length) {
+      this.tweets.sort((tweet, nextTweet) =>
+        nextTweet.created_at < tweet.created_at ? -1 : 1,
+      );
     }
   }
 }
