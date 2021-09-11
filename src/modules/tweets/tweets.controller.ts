@@ -32,4 +32,10 @@ export class TweetsController {
   remove(@Param() idDto: IdDto, @Request() req: AuthMiddlewareRequest) {
     return this.tweetsService.remove(idDto, req);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('feed')
+  feed(@Request() req: AuthMiddlewareRequest) {
+    return this.tweetsService.feed(req);
+  }
 }

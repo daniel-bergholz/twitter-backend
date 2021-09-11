@@ -147,7 +147,6 @@ export class UsersService {
 
     return this.usersRepository.findOne(user.id, {
       relations: ['follows', 'followers'],
-      select: ['username'],
     });
   }
 

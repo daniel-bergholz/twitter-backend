@@ -2,7 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { IdDto } from 'src/shared/dto/id.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { UsersService } from '../users/users.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { Tweet } from './entities/tweet.entity';
 
@@ -11,6 +12,7 @@ export class TweetsService {
   constructor(
     @InjectRepository(Tweet)
     private tweetsRepository: Repository<Tweet>,
+    private usersService: UsersService,
   ) {}
 
   async create(createTweetDto: CreateTweetDto, req: AuthMiddlewareRequest) {
@@ -22,6 +24,17 @@ export class TweetsService {
 
   async findAll() {
     return this.tweetsRepository.find({ relations: ['user'] });
+  }
+
+  async feed(req: AuthMiddlewareRequest) {
+    const user = await this.usersService.showUserFollowsAndFollowers(req);
+    const ids = [user.id, ...user.follows.map((follow) => follow.id)];
+
+    return this.tweetsRepository.find({
+      where: { user: { id: In(ids) } },
+      relations: ['user'],
+      // select: ['content'],
+    });
   }
 
   async remove(idDto: IdDto, req: AuthMiddlewareRequest) {
