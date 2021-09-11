@@ -6,7 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthMiddlewareRequest } from '../../../shared/dto/auth-middleware.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateFollowDto } from '../dto/create-follow.dto';
@@ -17,6 +17,10 @@ import { UsersService } from '../users.service';
 export class FollowsController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({
+    summary: 'Dá follow em um usuário',
+    description: 'Cria um follow a partir do ID do usuário',
+  })
   @UseGuards(JwtAuthGuard)
   @Post()
   createFollow(
@@ -26,6 +30,10 @@ export class FollowsController {
     return this.usersService.createFollow(createFollowDto, req);
   }
 
+  @ApiOperation({
+    summary: 'Dá unfollow em um usuário',
+    description: 'Deleta o follow a partir do ID do usuário',
+  })
   @UseGuards(JwtAuthGuard)
   @Delete()
   removeFollow(
