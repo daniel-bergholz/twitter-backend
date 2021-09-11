@@ -2,24 +2,25 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { IdDto } from 'src/shared/dto/id.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateTweetDto } from './dto/create-tweet.dto';
-import { TweetsService } from './tweets.service';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { CreateTweetDto } from '../dto/create-tweet.dto';
+import { TweetsService } from '../tweets.service';
 
-@Controller()
+@ApiTags('Tweets')
+@Controller('tweets')
 export class TweetsController {
   constructor(private readonly tweetsService: TweetsService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post('tweets')
+  @Post()
   create(
     @Body() createTweetDto: CreateTweetDto,
     @Request() req: AuthMiddlewareRequest,
@@ -28,14 +29,8 @@ export class TweetsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('tweets/:id')
+  @Delete(':id')
   remove(@Param() idDto: IdDto, @Request() req: AuthMiddlewareRequest) {
     return this.tweetsService.remove(idDto, req);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('feed')
-  feed(@Request() req: AuthMiddlewareRequest) {
-    return this.tweetsService.feed(req);
   }
 }
