@@ -68,6 +68,12 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('profile/:username/follows')
+  showUserFollowsByUsername(@Param() usernameDto: UsernameDto) {
+    return this.usersService.showUserFollowsAndFollowersByUsername(usernameDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('follows')
   createFollow(
     @Body() createFollowDto: CreateFollowDto,

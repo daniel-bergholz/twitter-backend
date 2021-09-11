@@ -169,6 +169,24 @@ export class UsersService {
     });
   }
 
+  async showUserFollowsAndFollowersByUsername(usernameDto: UsernameDto) {
+    const { username } = usernameDto;
+
+    // check if user exists
+    const user = await this.usersRepository.findOne({
+      where: { username },
+      relations: ['follows', 'followers'],
+    });
+
+    if (!user) {
+      throw new BadRequestException(
+        `O usuário com username = ${username} não existe`,
+      );
+    }
+
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { name, password, username } = createUserDto;
     const email = createUserDto.email.toLowerCase();
