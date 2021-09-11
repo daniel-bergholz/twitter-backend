@@ -6,7 +6,13 @@
 
 Backend do Twitter construído para ser acoplado com o React.js no Formação Frontend Expert, o mais novo programa de especialização em frontend do [Maratonas Academy](https://www.maratonas.academy/).
 
+## Acesso
+
+O Backend pode ser acessado em: https://maratonas-academy-twitter.herokuapp.com/. Ele conta com uma documentação Swagger em https://maratonas-academy-twitter.herokuapp.com/docs.
+
 ## Instalação
+
+O backend também pode ser usado localmente através do tutorial abaixo.
 
 Crie um banco de dados (Eu recomendo usar o docker)
 
@@ -31,6 +37,8 @@ Inicie o servidor
 ```bash
 yarn start:dev
 ```
+
+Não se esqueça de criar as variáveis de ambiente a partir do arquivo .env.example
 
 ## Scripts de migrations
 
