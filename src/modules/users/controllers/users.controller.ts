@@ -5,8 +5,8 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,7 +22,7 @@ import { UsernameDto } from '../dto/username.dto';
 import { CreateUserSwagger } from '../swagger/create-user.swagger';
 import { FindUsersSwagger } from '../swagger/find-users.swagger';
 import { ShowFollowsSwagger } from '../swagger/show-follows.swagger';
-import { ShowProfileSwagger } from '../swagger/show-profile.swagger';
+import { ShowProfileByUsernameSwagger } from '../swagger/show-profile-by-username.swagger';
 import { UsersService } from '../users.service';
 
 @ApiTags('Usuários')
@@ -57,7 +57,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Mostra o perfil de um usuário',
   })
-  @ApiResponse({ type: ShowProfileSwagger, status: 200 })
+  @ApiResponse({ type: ShowProfileByUsernameSwagger, status: 200 })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':username')
