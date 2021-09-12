@@ -5,7 +5,11 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import helmet from 'fastify-helmet';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 
@@ -47,7 +51,14 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+
+  const customOptions: SwaggerCustomOptions = {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  };
+
+  SwaggerModule.setup('docs', app, document, customOptions);
 
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
