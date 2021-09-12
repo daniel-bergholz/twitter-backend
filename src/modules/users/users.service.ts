@@ -141,12 +141,16 @@ export class UsersService {
     const { user: userFromJwt } = req;
 
     // check if user that will be followed exists
-    const user = await this.usersRepository.findOne(follow_user_id);
+    const user = await this.findOne({ id: follow_user_id });
 
     // check if logged user exists
     const loggedUser = await this.usersRepository.findOne(userFromJwt.id, {
       relations: ['follows'],
     });
+
+    if (!loggedUser) {
+      throw new BadRequestException('O usuário logado não existe');
+    }
 
     loggedUser.follows = loggedUser.follows.filter(
       (follow) => follow.id !== user.id,
@@ -163,12 +167,17 @@ export class UsersService {
     const { user: userFromJwt } = req;
 
     // check if user that will be followed exists
-    const user = await this.usersRepository.findOne(follow_user_id);
+    const user = await this.findOne({ id: follow_user_id });
 
     // check if logged user exists
     const loggedUser = await this.usersRepository.findOne(userFromJwt.id, {
       relations: ['follows'],
     });
+
+    // user cannot follow himself
+    if (loggedUser.id === user.id) {
+      throw new BadRequestException('Um usuário não pode seguir a si próprio');
+    }
 
     loggedUser.follows.push(user);
 
