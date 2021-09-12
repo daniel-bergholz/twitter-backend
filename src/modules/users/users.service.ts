@@ -65,8 +65,12 @@ export class UsersService {
     return user;
   }
 
-  async showProfileByUsername(usernameDto: UsernameDto) {
+  async showProfileByUsername(
+    usernameDto: UsernameDto,
+    req: AuthMiddlewareRequest,
+  ) {
     const { username } = usernameDto;
+    const { user: userFromJwt } = req;
 
     // check if user exists
     const user = await this.usersRepository.findOne({
@@ -80,7 +84,17 @@ export class UsersService {
       );
     }
 
-    return user;
+    // check if loggedUser follows user
+    const loggedUser = await this.usersRepository.findOne(userFromJwt.id, {
+      relations: ['follows'],
+    });
+
+    let isFollowing = false;
+    if (loggedUser.follows.find((follow) => follow.id === user.id)) {
+      isFollowing = true;
+    }
+
+    return { ...user, isFollowing };
   }
 
   async updateProfile(

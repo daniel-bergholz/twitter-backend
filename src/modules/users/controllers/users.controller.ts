@@ -6,6 +6,7 @@ import {
   Post,
   Query,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -13,6 +14,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { SearchDto } from 'src/shared/dto/search.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -59,8 +61,11 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':username')
-  showProfileByUsername(@Param() usernameDto: UsernameDto) {
-    return this.usersService.showProfileByUsername(usernameDto);
+  showProfileByUsername(
+    @Param() usernameDto: UsernameDto,
+    @Request() req: AuthMiddlewareRequest,
+  ) {
+    return this.usersService.showProfileByUsername(usernameDto, req);
   }
 
   @ApiOperation({
