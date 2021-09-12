@@ -19,21 +19,20 @@ export class TweetsService {
     const { content } = createTweetDto;
     const { user } = req;
 
-    return this.tweetsRepository.save({ content, user });
+    await this.tweetsRepository.save({ content, user });
   }
 
   async findAll() {
     return this.tweetsRepository.find({ relations: ['user'] });
   }
 
-  async feed(req: AuthMiddlewareRequest) {
+  async feed(req: AuthMiddlewareRequest): Promise<Tweet[]> {
     const user = await this.usersService.showUserFollowsAndFollowers(req);
     const ids = [user.id, ...user.follows.map((follow) => follow.id)];
 
     return this.tweetsRepository.find({
       where: { user: { id: In(ids) } },
       relations: ['user'],
-      // select: ['content'],
     });
   }
 

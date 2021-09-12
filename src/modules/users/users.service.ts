@@ -49,7 +49,7 @@ export class UsersService {
     return user;
   }
 
-  async showProfile(req: AuthMiddlewareRequest): Promise<User> {
+  async showProfile(req: AuthMiddlewareRequest) {
     const { user: userFromJwt } = req;
     const { id } = userFromJwt;
 
@@ -65,7 +65,7 @@ export class UsersService {
     return user;
   }
 
-  async showProfileByUsername(usernameDto: UsernameDto): Promise<User> {
+  async showProfileByUsername(usernameDto: UsernameDto) {
     const { username } = usernameDto;
 
     // check if user exists
@@ -187,7 +187,7 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     const { name, password, username } = createUserDto;
     const email = createUserDto.email.toLowerCase();
 
@@ -211,8 +211,6 @@ export class UsersService {
     });
 
     await this.usersRepository.save(user);
-
-    return this.removeUnwantedFields(user);
   }
 
   async remove(req: AuthMiddlewareRequest): Promise<void> {

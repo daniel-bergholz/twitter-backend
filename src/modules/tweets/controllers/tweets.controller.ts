@@ -7,7 +7,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { IdDto } from 'src/shared/dto/id.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -22,6 +22,7 @@ export class TweetsController {
   @ApiOperation({
     summary: 'Cria um tweet',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   create(
@@ -35,6 +36,7 @@ export class TweetsController {
     summary: 'Deleta um tweet',
     description: 'Apaga um tweet a partir do ID dele',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param() idDto: IdDto, @Request() req: AuthMiddlewareRequest) {

@@ -7,10 +7,18 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthMiddlewareRequest } from '../../../shared/dto/auth-middleware.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { ShowFollowsSwagger } from '../swagger/show-follows.swagger';
+import { ShowProfileSwagger } from '../swagger/show-profile.swagger';
+import { UpdateProfileSwagger } from '../swagger/update-profile.swagger';
 import { UsersService } from '../users.service';
 
 @ApiTags('Perfil')
@@ -22,6 +30,8 @@ export class ProfileController {
     summary: 'Mostra o seu perfil',
     description: 'Carrega o seu perfil junto com os seus últimos tweets',
   })
+  @ApiBearerAuth()
+  @ApiResponse({ type: ShowProfileSwagger, status: 200 })
   @UseGuards(JwtAuthGuard)
   @Get()
   showProfile(@Request() req: AuthMiddlewareRequest) {
@@ -32,6 +42,8 @@ export class ProfileController {
     summary: 'Atualiza o seu perfil',
     description: 'Altera o seu nome, bio ou senha',
   })
+  @ApiResponse({ type: UpdateProfileSwagger, status: 200 })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put()
   updateProfile(
@@ -46,6 +58,7 @@ export class ProfileController {
     description:
       'CUIDADO: Deleta a sua conta, junto com os seus tweets e quem você estava seguindo',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete()
   remove(@Request() req: AuthMiddlewareRequest) {
@@ -55,6 +68,8 @@ export class ProfileController {
   @ApiOperation({
     summary: 'Mostra quem você segue e os seus seguidores',
   })
+  @ApiResponse({ status: 200, type: ShowFollowsSwagger })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('follows')
   showUserFollows(@Request() req: AuthMiddlewareRequest) {

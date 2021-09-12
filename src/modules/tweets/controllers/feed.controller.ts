@@ -1,7 +1,13 @@
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { FeedSwagger } from '../swagger/feed.swagger';
 import { TweetsService } from '../tweets.service';
 
 @ApiTags('Feed')
@@ -13,6 +19,8 @@ export class FeedController {
     summary: 'Mostra o feed do usuário logado',
     description: 'Retorna os tweets das pessoas que você segue',
   })
+  @ApiBearerAuth()
+  @ApiResponse({ type: FeedSwagger, status: 200, isArray: true })
   @UseGuards(JwtAuthGuard)
   @Get()
   feed(@Request() req: AuthMiddlewareRequest) {

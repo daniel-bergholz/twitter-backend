@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { Tweet } from 'src/modules/tweets/entities/tweet.entity';
 import {
@@ -16,36 +17,46 @@ import {
 
 @Entity('users')
 export class User {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty()
   @Column()
   name: string;
 
+  @ApiProperty({ nullable: true, default: null })
   @Column({ default: null })
   bio: string;
 
+  @ApiProperty()
   @Column({ unique: true })
   username: string;
 
+  @ApiProperty()
   @Column({ unique: true })
   email: string;
 
   @Column({ select: false })
   password: string;
 
+  @ApiProperty({ isArray: true, type: Tweet })
   @OneToMany(() => Tweet, (tweet) => tweet.user)
   tweets: Tweet[];
 
+  @ApiProperty()
   @CreateDateColumn()
   created_at: Date;
 
+  @ApiProperty()
   @UpdateDateColumn()
   updated_at: Date;
 
+  @ApiProperty({ isArray: true, type: User })
   @ManyToMany(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
   follows: User[];
 
+  @ApiProperty({ isArray: true, type: User })
   @ManyToMany(() => User, (user) => user.follows, { onDelete: 'CASCADE' })
   @JoinTable()
   followers: User[];
