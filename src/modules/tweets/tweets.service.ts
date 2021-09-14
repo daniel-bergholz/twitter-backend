@@ -33,6 +33,7 @@ export class TweetsService {
     return this.tweetsRepository.find({
       where: { user: { id: In(ids) } },
       relations: ['user'],
+      take: 100,
     });
   }
 
