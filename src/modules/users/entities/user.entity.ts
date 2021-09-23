@@ -63,25 +63,21 @@ export class User {
 
   @BeforeUpdate()
   @BeforeInsert()
-  trimName() {
+  async beforeSave() {
     if (this?.name) {
       this.name = this.name.trim();
     }
-  }
 
-  @BeforeUpdate()
-  @BeforeInsert()
-  lowercaseEmail() {
     if (this?.email) {
       this.email = this.email.toLowerCase().trim();
     }
-  }
 
-  @BeforeUpdate()
-  @BeforeInsert()
-  async hashPassword() {
     if (this?.password) {
       this.password = await bcrypt.hash(this.password, 12);
+    }
+
+    if (this?.username) {
+      this.username = this.username.trim().replace(' ', '_');
     }
   }
 

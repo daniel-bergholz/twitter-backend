@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ name: 'name', example: 'Daniel Berg' })
@@ -18,6 +24,10 @@ export class CreateUserDto {
   @ApiProperty({
     name: 'username',
     example: 'daniel_berg98',
+    description: 'O username não pode conter caracteres especiais nem espaços',
+  })
+  @Matches(/^[a-z0-9_-]{3,25}$/, {
+    message: 'O username não pode conter caracteres especiais nem espaços',
   })
   @IsNotEmpty({ message: 'O campo username não pode ser vazio' })
   @IsString({ message: 'O campo username deve ser uma string' })
