@@ -56,7 +56,7 @@ export class UsersService {
 
     // check if user exists
     const user = await this.usersRepository.findOne(id, {
-      relations: ['tweets'],
+      relations: ['tweets', 'follows', 'followers'],
     });
 
     if (!user) {
@@ -76,7 +76,7 @@ export class UsersService {
     // check if user exists
     const user = await this.usersRepository.findOne({
       where: { username },
-      relations: ['tweets'],
+      relations: ['tweets', 'follows', 'followers'],
     });
 
     if (!user) {

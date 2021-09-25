@@ -95,11 +95,11 @@ export class User {
       );
     }
 
-    if (this?.followers?.length) {
+    if (this?.followers) {
       this.number_of_followers = this.followers.length;
     }
 
-    if (this?.follows?.length) {
+    if (this?.follows) {
       this.number_of_follows = this.follows.length;
     }
   }
