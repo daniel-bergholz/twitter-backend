@@ -34,6 +34,7 @@ export class TweetsService {
       where: { user: { id: In(ids) } },
       relations: ['user'],
       take: 100,
+      order: { created_at: 'DESC' },
     });
   }
 
