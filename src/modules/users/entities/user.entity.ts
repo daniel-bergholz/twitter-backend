@@ -52,6 +52,12 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @ApiProperty()
+  number_of_followers: number;
+
+  @ApiProperty()
+  number_of_follows: number;
+
   @ApiProperty({ isArray: true, type: User })
   @ManyToMany(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
   follows: User[];
@@ -87,6 +93,14 @@ export class User {
       this.tweets.sort((tweet, nextTweet) =>
         nextTweet.created_at < tweet.created_at ? -1 : 1,
       );
+    }
+
+    if (this?.followers?.length) {
+      this.number_of_followers = this.followers.length;
+    }
+
+    if (this?.follows?.length) {
+      this.number_of_follows = this.follows.length;
     }
   }
 }
