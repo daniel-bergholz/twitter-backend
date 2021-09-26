@@ -38,6 +38,7 @@ export class UsersService {
     return this.usersRepository.find({
       order: { created_at: 'DESC' },
       take: 50,
+      where: { id: Not(user.id) },
     });
   }
 
