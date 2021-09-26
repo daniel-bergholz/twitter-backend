@@ -11,7 +11,7 @@ import { UsersModule } from './modules/users/users.module';
     TypeOrmModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 10,
-      limit: 6,
+      limit: 20,
     }),
     AuthModule,
     UsersModule,
