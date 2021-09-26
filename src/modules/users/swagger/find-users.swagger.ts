@@ -6,4 +6,6 @@ export class FindUsersSwagger extends OmitType(User, [
   'followers',
   'follows',
   'password',
+  'number_of_followers',
+  'number_of_follows',
 ]) {}
