@@ -50,8 +50,11 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query() searchDto: SearchDto) {
-    return this.usersService.findAll(searchDto);
+  findAll(
+    @Query() searchDto: SearchDto,
+    @Request() req: AuthMiddlewareRequest,
+  ) {
+    return this.usersService.findAll(searchDto, req);
   }
 
   @ApiOperation({

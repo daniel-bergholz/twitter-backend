@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SearchDto } from 'src/shared/dto/search.dto';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, Not } from 'typeorm';
 import { AuthMiddlewareRequest } from '../../shared/dto/auth-middleware.dto';
 import { IdDto } from '../../shared/dto/id.dto';
 import { CreateFollowDto } from './dto/create-follow.dto';
@@ -21,13 +21,17 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findAll(searchDto: SearchDto): Promise<User[]> {
+  async findAll(
+    searchDto: SearchDto,
+    req: AuthMiddlewareRequest,
+  ): Promise<User[]> {
+    const { user } = req;
     const { search } = searchDto;
 
     if (search && search !== '') {
       return this.usersRepository.find({
         order: { created_at: 'DESC' },
-        where: { username: Like(`%${search}%`) },
+        where: { username: Like(`%${search}%`), id: Not(user.id) },
       });
     }
 
